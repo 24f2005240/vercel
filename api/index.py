@@ -44,5 +44,3 @@ def metrics(req: RequestBody):
         }
 
     return result
-
-    return result
