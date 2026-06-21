@@ -1,46 +1,53 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json
 import numpy as np
+import os
 
 app = FastAPI()
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+CORSMiddleware,
+allow_origins=["*"],
+allow_credentials=False,
+allow_methods=["GET", "POST", "OPTIONS"],
+allow_headers=["*"],
 )
 
-# load telemetry data
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(**file**))
 with open(os.path.join(BASE_DIR, "telemetry.json")) as f:
-    telemetry = json.load(f)
+telemetry = json.load(f)
 
- 
 class RequestBody(BaseModel):
-    regions: list[str]
-    threshold_ms: int
+regions: list[str]
+threshold_ms: int
 
+@app.options("/")
+def options():
+response = Response()
+response.headers["Access-Control-Allow-Origin"] = "*"
+response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+response.headers["Access-Control-Allow-Headers"] = "*"
+return response
 
 @app.post("/")
 def metrics(req: RequestBody):
-    result = {}
+result = {}
 
-    for region in req.regions:
-        rows = [r for r in telemetry if r["region"] == region]
+```
+for region in req.regions:
+    rows = [r for r in telemetry if r["region"] == region]
 
-        latencies = [r["latency_ms"] for r in rows]
-        uptimes = [r["uptime_pct"] for r in rows]
+    latencies = [r["latency_ms"] for r in rows]
+    uptimes = [r["uptime_pct"] for r in rows]
 
-        result[region] = {
-            "avg_latency": sum(latencies) / len(latencies),
-            "p95_latency": float(np.percentile(latencies, 95)),
-            "avg_uptime": sum(uptimes) / len(uptimes),
-            "breaches": sum(1 for x in latencies if x > req.threshold_ms)
-        }
+    result[region] = {
+        "avg_latency": sum(latencies) / len(latencies),
+        "p95_latency": float(np.percentile(latencies, 95)),
+        "avg_uptime": sum(uptimes) / len(uptimes),
+        "breaches": sum(1 for x in latencies if x > req.threshold_ms)
+    }
 
-    return result
+return result
+```
