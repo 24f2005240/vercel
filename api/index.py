@@ -35,13 +35,15 @@ def metrics(req: RequestBody):
         rows = [r for r in telemetry if r["region"] == region]
 
         latencies = [r["latency_ms"] for r in rows]
-        uptimes = [r["uptime"] for r in rows]
+        uptimes = [r["uptime_pct"] for r in rows]
 
         result[region] = {
-            "avg_latency": sum(latencies)/len(latencies),
+            "avg_latency": sum(latencies) / len(latencies),
             "p95_latency": float(np.percentile(latencies, 95)),
-            "avg_uptime": sum(uptimes)/len(uptimes),
+            "avg_uptime": sum(uptimes) / len(uptimes),
             "breaches": sum(1 for x in latencies if x > req.threshold_ms)
         }
+
+    return result
 
     return result
