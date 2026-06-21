@@ -15,7 +15,10 @@ app.add_middleware(
 )
 
 # load telemetry data
-with open("telemetry.json") as f:
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+with open(os.path.join(BASE_DIR, "telemetry.json")) as f:
     telemetry = json.load(f)
 
 
