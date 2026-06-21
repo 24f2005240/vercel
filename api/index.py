@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 with open(os.path.join(BASE_DIR, "telemetry.json")) as f:
     telemetry = json.load(f)
 
-
+ 
 class RequestBody(BaseModel):
     regions: list[str]
     threshold_ms: int
